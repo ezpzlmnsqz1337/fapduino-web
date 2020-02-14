@@ -1,33 +1,9 @@
 {
   // eslint and js formating
-  "editor.formatOnSave": false,
-  "vetur.validation.template": false,
+  "editor.formatOnSave": true,
   "files.trimTrailingWhitespace": true,
   "editor.detectIndentation": false,
-  "editor.tabSize": 2,
-  "vetur.format.defaultFormatter.js": "vscode-typescript",
-  "vetur.format.defaultFormatter.html": "js-beautify-html",
-  "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
-  "javascript.format.enable": false,
-  "eslint.alwaysShowStatus": true,
-  "eslint.options": {
-    "extensions": [
-      ".html",
-      ".js",
-      ".vue",
-      ".jsx"
-    ],
-    "indent": [
-      2,
-      2,
-      {
-        "baseIndent": 16
-      }
-    ]
-  },
-  "files.autoSave": "off",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
-  "python.linting.enabled": false
+  "editor.tabSize": 4,
+  "python.linting.enabled": true,
+  "python.formatting.provider": "autopep8"
 }
