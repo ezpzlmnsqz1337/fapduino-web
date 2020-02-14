@@ -18,25 +18,25 @@
           <h2>Arm body controls</h2>
           <div class="form-group">
             <label for="up-down">Up and down</label>
-            <input type="range" class="form-control-range" id="up-down" onchange="upDownChange(this.value)" />
+            <input type="range" class="form-control-range" id="up-down" oninput="upDownChange(this.value)" />
             <input type="number" disabled id="up-down-value" value="0" />
           </div>
           <div class="form-group">
             <label for="up-down">Front and back</label>
-            <input type="range" class="form-control-range" id="front-back" onchange="frontBackChange(this.value)" />
+            <input type="range" class="form-control-range" id="front-back" oninput="frontBackChange(this.value)" />
             <input type="number" disabled id="front-back-value" value="0" />
           </div>
           <div class="form-group">
             <label for="up-down">Left and right</label>
-            <input type="range" class="form-control-range" id="left-right" onchange="leftRightChange(this.value)" />
+            <input type="range" class="form-control-range" id="left-right" oninput="leftRightChange(this.value)" />
             <input type="number" disabled id="left-right-value" value="0" />
           </div>
 
           <h2>Claw controls</h2>
           <div class="form-group">
             <label for="up-down">Left and right</label>
-            <input type="range" class="form-control-range" id="claw-rotate-left-right" onchange="clawRotateLeftRightChange(this.value)" />
-            <input type="number" disabled id="claw-rotate-left-right-value" value="0" />
+            <input type="range" class="form-control-range" id="claw-rotate" oninput="clawRotateChange(this.value)" />
+            <input type="number" disabled id="claw-rotate-value" value="0" />
           </div>
           <div class="btn-group btn-group-toggle" data-toggle="buttons">
             <label class="btn btn-success active">
@@ -45,14 +45,14 @@
                 value="open"
                 id="clawOpen"
                 checked
-                onclick="openClaw()" /> Open
+                onchange="openClaw()" /> Open
             </label>
             <label class="btn btn-danger">
               <input type="radio"
                 name="clawState"
                 value="closed"
                 id="clawClosed"
-                onclick="closeClaw()" /> Close
+                onchange="closeClaw()" /> Close
             </label>
           </div>
         </div>
@@ -95,7 +95,7 @@
       function clawRotateLeftRightChange(value) {
         console.log('CR: ', value)
         ws.send('clawRotate:' + value)
-        document.getElementById('claw-rotate-left-right-value').value = value
+        document.getElementById('claw-rotate-value').value = value
       }
 
       function openClaw() {
