@@ -1,9 +1,30 @@
 {
   // eslint and js formating
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   "files.trimTrailingWhitespace": true,
   "editor.detectIndentation": false,
   "editor.tabSize": 4,
   "python.linting.enabled": true,
-  "python.formatting.provider": "autopep8"
+  "python.formatting.provider": "autopep8",
+  "javascript.format.enable": false,
+  "eslint.alwaysShowStatus": true,
+  "eslint.options": {
+    "extensions": [
+      ".html",
+      ".js",
+      ".vue",
+      ".jsx"
+    ],
+    "indent": [
+      2,
+      2,
+      {
+        "baseIndent": 16
+      }
+    ]
+  },
+  "files.autoSave": "off",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
 }

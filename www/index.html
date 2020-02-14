@@ -1,116 +1,184 @@
 <!DOCTYPE html>
 
 <html>
+  <head>
+    <title>Fapduino control</title>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-	<head>
-		<title>Fapduino control</title>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<!-- Bootstrap CSS -->
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-		<link rel="stylesheet" href="style.css" />
-	</head>
-
-	<body>
-		<div class="container-fluid">
-			<div class="row justify-content-md-center">
-				<div class="col-lg-4 col-md-6 col-sm-12 text-center">
+  <body>
+    <div class="container-fluid">
+      <div class="row justify-content-md-center">
+        <div class="col-lg-4 col-md-6 col-sm-12 text-center">
           <h2>Arm body controls</h2>
           <div class="form-group">
             <label for="up-down">Up and down</label>
-            <input type="range" class="form-control-range" id="up-down" oninput="upDownChange(this.value)" />
+            <input
+              type="range"
+              class="form-control-range"
+              id="up-down"
+              oninput="upDown(this.value)"
+            />
             <input type="number" disabled id="up-down-value" value="0" />
           </div>
           <div class="form-group">
             <label for="up-down">Front and back</label>
-            <input type="range" class="form-control-range" id="front-back" oninput="frontBackChange(this.value)" />
+            <input
+              type="range"
+              class="form-control-range"
+              id="front-back"
+              oninput="frontBack(this.value)"
+            />
             <input type="number" disabled id="front-back-value" value="0" />
           </div>
           <div class="form-group">
             <label for="up-down">Left and right</label>
-            <input type="range" class="form-control-range" id="left-right" oninput="leftRightChange(this.value)" />
+            <input
+              type="range"
+              class="form-control-range"
+              id="left-right"
+              oninput="leftRight(this.value)"
+            />
             <input type="number" disabled id="left-right-value" value="0" />
           </div>
 
           <h2>Claw controls</h2>
           <div class="form-group">
             <label for="up-down">Left and right</label>
-            <input type="range" class="form-control-range" id="claw-rotate" oninput="clawRotateChange(this.value)" />
+            <input
+              type="range"
+              class="form-control-range"
+              id="claw-rotate"
+              oninput="clawRotate(this.value)"
+            />
             <input type="number" disabled id="claw-rotate-value" value="0" />
           </div>
           <div class="btn-group btn-group-toggle" data-toggle="buttons">
             <label class="btn btn-success active">
-              <input type="radio"
+              <input
+                type="radio"
                 name="clawState"
                 value="open"
                 id="clawOpen"
                 checked
-                onchange="openClaw()" /> Open
+                onchange="openClaw()"
+              />
+              Open
             </label>
             <label class="btn btn-danger">
-              <input type="radio"
+              <input
+                type="radio"
                 name="clawState"
                 value="closed"
                 id="clawClosed"
-                onchange="closeClaw()" /> Close
+                onchange="closeClaw()"
+              />
+              Close
             </label>
           </div>
         </div>
       </div>
-		</div>
-		<script>
+    </div>
+    <script>
       // var ws = new WebSocket('ws://' + window.location.hostname)
-      var ws = new WebSocket('ws://localhost:8085')
+      var ws = new WebSocket("ws://localhost:8085")
 
-			ws.onopen = event => {
-				ws.send('subscribe_state')
-			}
+      ws.onopen = event => {
+        ws.send("subscribe_state")
+      }
 
-			ws.onmessage = event => {
-				console.log('Response from server: ', event.data)
-				if (event.data.includes('current_state')) {
-					state = parseInt(event.data.split(':')[1])
-				}
-			}
+      ws.onmessage = event => {
+        console.log("Response from server: ", event.data)
+        if (event.data.includes("armData")) {
+          var armData = event.data.split(":")[1].split("|")
+          document.getElementById("left-right").value = parseInt(armData[0])
+          document.getElementById("left-right-value").value = parseInt(armData[0])
+
+          document.getElementById("up-down").value = parseInt(armData[1])
+          document.getElementById("up-down-value").value = parseInt(armData[1])
+
+          document.getElementById("front-back").value = parseInt(armData[2])
+          document.getElementById("front-back-value").value = parseInt(armData[2])
+
+          document.getElementById("claw-rotate").value = parseInt(armData[3])
+          document.getElementById("claw-rotate-value").value = parseInt(armData[3])
+
+          if (armData[4] === "open") {
+            document.getElementById("clawClosed").checked = false
+            document.getElementById("clawClosed").parentElement.classList.remove("active")
+            document.getElementById("clawOpen").parentElement.classList.add("active")
+            document.getElementById("clawOpen").checked = true
+          }
+          if (armData[4] === "closed") {
+            document.getElementById("clawOpen").checked = false
+            document.getElementById("clawOpen").parentElement.classList.remove("active")
+            document.getElementById("clawClosed").parentElement.classList.add("active")
+            document.getElementById("clawClosed").checked = true
+          }
+        }
+      }
 
       // controls
-      function upDownChange(value) {
-        console.log('UD: ', value)
-        ws.send('upDown:' + value)
-        document.getElementById('up-down-value').value = value
+      function upDown(value) {
+        console.log("UD: ", value)
+        ws.send("arm:upDown:" + value)
+        document.getElementById("up-down-value").value = value
       }
 
-      function leftRightChange(value) {
-        console.log('LR: ', value)
-        ws.send('leftRight:' + value)
-        document.getElementById('left-right-value').value = value
+      function leftRight(value) {
+        console.log("LR: ", value)
+        ws.send("arm:leftRight:" + value)
+        document.getElementById("left-right-value").value = value
       }
 
-      function frontBackChange(value) {
-        console.log('FB: ', value)
-        ws.send('frontBack:' + value)
-        document.getElementById('front-back-value').value = value
+      function frontBack(value) {
+        console.log("FB: ", value)
+        ws.send("arm:frontBack:" + value)
+        document.getElementById("front-back-value").value = value
       }
 
-      function clawRotateLeftRightChange(value) {
-        console.log('CR: ', value)
-        ws.send('clawRotate:' + value)
-        document.getElementById('claw-rotate-value').value = value
+      function clawRotate(value) {
+        console.log("CR: ", value)
+        ws.send("claw:rotate:" + value)
+        document.getElementById("claw-rotate-value").value = value
       }
 
       function openClaw() {
-        ws.send('claw:open')
+        ws.send("claw:open")
       }
 
       function closeClaw() {
-        ws.send('claw:close')
+        ws.send("claw:close")
       }
-
-		</script>
-		<!-- Optional JavaScript -->
+    </script>
+    <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-	</body>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>
