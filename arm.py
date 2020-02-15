@@ -61,9 +61,13 @@ class Arm:
             self.servoGrip.moveTo(servoGripHigh)
 
     def setPosition(self, servo, position):
-        print('set position %s' % position)
         armData = self.getData().split('|')
         armData[servo] = str(position)
+        self.setData('|'.join(armData))
+
+    def incrementPosition(self, servo, value):
+        armData = self.getData().split('|')
+        armData[servo] = str(int(armData[servo]) + int(value))
         self.setData('|'.join(armData))
 
     def clawOpen(self):

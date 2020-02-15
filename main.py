@@ -21,6 +21,18 @@ def _recvTextCallback(webSocket, msg):
         webSocket.SendText('armData:%s' % robotArm.getData())
     elif 'arm:getData' in msg:
         webSocket.SendText('armData:%s' % robotArm.getData())
+    elif 'arm:leftRightBy' in msg:
+        robotArm.incrementPosition(0, msg.split(':')[2])
+        webSocket.SendText('armData:%s' % robotArm.getData())
+    elif 'arm:upDownBy' in msg:
+        robotArm.incrementPosition(1, msg.split(':')[2])
+        webSocket.SendText('armData:%s' % robotArm.getData())
+    elif 'arm:frontBackBy' in msg:
+        robotArm.incrementPosition(2, msg.split(':')[2])
+        webSocket.SendText('armData:%s' % robotArm.getData())
+    elif 'claw:rotateBy' in msg:
+        robotArm.incrementPosition(3, msg.split(':')[2])
+        webSocket.SendText('armData:%s' % robotArm.getData())
     elif 'arm:leftRight' in msg:
         robotArm.setPosition(0, msg.split(':')[2])
         webSocket.SendText('armData:%s' % robotArm.getData())

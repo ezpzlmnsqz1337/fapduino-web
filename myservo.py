@@ -13,9 +13,7 @@ class MyServo:
         self.servo.writeAngle(self.position)
 
     def moveTo(self, value):
-        print('value %s' % value)
         newValue = min(self.maximum, max(self.minimum, value))
-        print('new value %s' % newValue)
         self.servo.writeAngle(newValue)
         self.position = newValue
 

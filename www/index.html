@@ -20,7 +20,7 @@
 
   <body>
     <div class="container-fluid">
-      <div class="row justify-content-md-center">
+      <div class="row justify-content-md-center" style="display: none">
         <div class="col-lg-4 col-md-6 col-sm-12 text-center">
           <h2>Arm body controls</h2>
           <div class="form-group">
@@ -90,10 +90,76 @@
           </div>
         </div>
       </div>
+      <div class="row justify-content-md-center video" >
+        <!-- <img src="http://stream-url" width="1920" height="1080" /> -->
+      </div>
+      <div class="row justify-content-md-center">
+
+            <div class="keys">
+                <div id="key-w" class="key top">W</div>
+                <div>
+                    <div id="key-a" class="key">A</div>
+                    <div id="key-s" class="key">S</div>
+                    <div id="key-d" class="key">D</div>
+                </div>
+            </div>
+
+            <div class="keys">
+                <div id="key-up" class="key top">up</div>
+                <div>
+                    <div id="key-left" class="key">left</div>
+                    <div id="key-down" class="key">down</div>
+                    <div id="key-right" class="key">right</div>
+                </div>
+            </div>
+      </div>
     </div>
+    <style>
+        body {
+            padding: 2rem;
+        }
+
+        .keys {
+            display: inline-block;
+            width: 10rem;
+            text-align: center;
+        }
+
+        .keys .key .top {
+            display: block;
+        }
+
+        .key {
+            display: inline-block;
+            width: 3rem;
+            height: 3rem;
+            border: 1px solid black;
+            line-height: 3rem;
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* Internet Explorer */
+            -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
+            -webkit-user-select: none; /* Chrome, Safari, and Opera */
+            -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
+        }
+
+        .key:hover, .key.active {
+            background-color: red;
+            cursor: pointer;
+        }
+
+        .video {
+            margin-bottom: 2rem;
+        }
+
+        .video img {
+            width: 50vw;
+            height: auto;
+        }
+    </style>
     <script>
-      var ws = new WebSocket('ws://' + window.location.hostname)
-      // var ws = new WebSocket("ws://localhost:8085")
+      var SPEED = 5
+      // var ws = new WebSocket('ws://' + window.location.hostname)
+      var ws = new WebSocket("ws://192.168.0.179")
 
       ws.onopen = event => {
         ws.send("arm:getData")
@@ -130,6 +196,50 @@
         }
       }
 
+        // throttle
+        function throttle (callback, limit) {
+            var wait = false;
+            return function () {
+                if (!wait) {
+
+                    callback.apply(null, arguments);
+                    wait = true;
+                    setTimeout(function () {
+                    wait = false;
+                    }, limit);
+                }
+            }
+        }
+
+      // controls
+      function upDownIncrement(value) {
+        console.log("UD: ", value)
+        ws.send("arm:upDownBy:" + value)
+      }
+
+      function leftRightIncrement(value) {
+        console.log("LR: ", value)
+        ws.send("arm:leftRightBy:" + value)
+      }
+
+      function frontBackIncrement(value) {
+        console.log("FB: ", value)
+        ws.send("arm:frontBackBy:" + value)
+      }
+
+      function clawRotateIncrement(value) {
+        console.log("CR: ", value)
+        ws.send("claw:rotateBy:" + value)
+      }
+
+      function openClaw() {
+        ws.send("claw:open")
+      }
+
+      function closeClaw() {
+        ws.send("claw:close")
+      }
+
       // controls
       function upDown(value) {
         console.log("UD: ", value)
@@ -163,38 +273,88 @@
         ws.send("claw:close")
       }
 
-      document.addEventListener('keydown', e => {
+      document.getElementById('key-w').onclick = e => {
+        this.frontBackIncrement(SPEED)
+      }
+
+      document.getElementById('key-s').onclick = e => {
+        this.frontBackIncrement(-SPEED)
+      }
+
+      document.getElementById('key-a').onclick = e => {
+        this.clawRotateIncrement(-SPEED)
+      }
+
+      document.getElementById('key-d').onclick = e => {
+        this.clawRotateIncrement(SPEED)
+      }
+
+      document.getElementById('key-up').onclick = e => {
+        this.upDownIncrement(SPEED)
+      }
+
+      document.getElementById('key-down').onclick = e => {
+        this.upDownIncrement(-SPEED)
+      }
+
+      document.getElementById('key-left').onclick = e => {
+        this.leftRightIncrement(-SPEED)
+      }
+
+      document.getElementById('key-right').onclick = e => {
+        this.leftRightIncrement(SPEED)
+      }
+
+      document.addEventListener('keydown', throttle(e => {
           switch(e.key) {
             case 'ArrowLeft':
-                this.leftRight(parseInt(document.getElementById("left-right-value").value) - 1)
+                document.getElementById('key-left').classList.add('active')
+                this.leftRightIncrement(-SPEED)
                 break
             case 'ArrowRight':
-                this.leftRight(parseInt(document.getElementById("left-right-value").value) + 1)
+                this.leftRightIncrement(SPEED)
+                document.getElementById('key-right').classList.add('active')
                 break
             case 'ArrowUp':
-                this.upDown(parseInt(document.getElementById("up-down-value").value) + 1)
+                this.upDownIncrement(SPEED)
+                document.getElementById('key-up').classList.add('active')
                 break
             case 'ArrowDown':
-                this.upDown(parseInt(document.getElementById("up-down-value").value) - 1)
+                this.upDownIncrement(-SPEED)
+                document.getElementById('key-down').classList.add('active')
                 break
             case 'a':
-                this.clawRotate(parseInt(document.getElementById("claw-rotate-value").value) - 1)
+                this.clawRotateIncrement(-SPEED)
+                document.getElementById('key-a').classList.add('active')
                 break
             case 'd':
-                this.clawRotate(parseInt(document.getElementById("claw-rotate-value").value) + 1)
+                this.clawRotateIncrement(SPEED)
+                document.getElementById('key-d').classList.add('active')
                 break
-                case 's':
-                this.frontBack(parseInt(document.getElementById("front-back-value").value) - 1)
+            case 's':
+                this.frontBackIncrement(-SPEED)
+                document.getElementById('key-s').classList.add('active')
                 break
             case 'w':
-                this.frontBack(parseInt(document.getElementById("front-back-value").value) + 1)
+                this.frontBackIncrement(SPEED)
+                document.getElementById('key-w').classList.add('active')
                 break
             case 'e':
                 this.closeClaw()
+                document.getElementById('key-e').classList.add('active')
                 break
             case 'q':
                 this.openClaw()
+                document.getElementById('key-q').classList.add('active')
                 break
+          }
+      }, 50))
+
+      document.addEventListener('keyup', e => {
+          keys = document.getElementsByClassName('key')
+
+          for (let i = 0; i < keys.length; i++) {
+            keys[i].classList.remove('active')
           }
       })
     </script>
