@@ -92,11 +92,11 @@
       </div>
     </div>
     <script>
-      // var ws = new WebSocket('ws://' + window.location.hostname)
-      var ws = new WebSocket("ws://localhost:8085")
+      var ws = new WebSocket('ws://' + window.location.hostname)
+      // var ws = new WebSocket("ws://localhost:8085")
 
       ws.onopen = event => {
-        ws.send("subscribe_state")
+        ws.send("arm:getData")
       }
 
       ws.onmessage = event => {
@@ -121,7 +121,7 @@
             document.getElementById("clawOpen").parentElement.classList.add("active")
             document.getElementById("clawOpen").checked = true
           }
-          if (armData[4] === "closed") {
+          if (armData[4] === "close") {
             document.getElementById("clawOpen").checked = false
             document.getElementById("clawOpen").parentElement.classList.remove("active")
             document.getElementById("clawClosed").parentElement.classList.add("active")
@@ -162,6 +162,41 @@
       function closeClaw() {
         ws.send("claw:close")
       }
+
+      document.addEventListener('keydown', e => {
+          switch(e.key) {
+            case 'ArrowLeft':
+                this.leftRight(parseInt(document.getElementById("left-right-value").value) - 1)
+                break
+            case 'ArrowRight':
+                this.leftRight(parseInt(document.getElementById("left-right-value").value) + 1)
+                break
+            case 'ArrowUp':
+                this.upDown(parseInt(document.getElementById("up-down-value").value) + 1)
+                break
+            case 'ArrowDown':
+                this.upDown(parseInt(document.getElementById("up-down-value").value) - 1)
+                break
+            case 'a':
+                this.clawRotate(parseInt(document.getElementById("claw-rotate-value").value) - 1)
+                break
+            case 'd':
+                this.clawRotate(parseInt(document.getElementById("claw-rotate-value").value) + 1)
+                break
+                case 's':
+                this.frontBack(parseInt(document.getElementById("front-back-value").value) - 1)
+                break
+            case 'w':
+                this.frontBack(parseInt(document.getElementById("front-back-value").value) + 1)
+                break
+            case 'e':
+                this.closeClaw()
+                break
+            case 'q':
+                this.openClaw()
+                break
+          }
+      })
     </script>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

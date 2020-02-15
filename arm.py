@@ -1,10 +1,10 @@
-import servo
+import myservo
 
-servoBasePin = 6
-servoLeftPin = 7
-servoRightPin = 8
-servoGripPin = 9
-servoGripRotatePin = 10
+servoBasePin = 5
+servoLeftPin = 18
+servoRightPin = 19
+servoGripPin = 21
+servoGripRotatePin = 22
 
 servoBasePosition = 90
 servoBaseLow = 0
@@ -29,50 +29,49 @@ servoGripRotateHigh = 180
 
 class Arm:
     def __init__(self):
-        self.servoBase = servo.MyServo(
+        self.servoBase = myservo.MyServo(
             servoBasePin, servoBaseLow, servoBaseHigh, servoBasePosition)
-        self.servoLeft = servo.MyServo(
+        self.servoLeft = myservo.MyServo(
             servoLeftPin, servoLeftLow, servoLeftHigh, servoLeftPosition)
-        self.servoRight = servo.MyServo(
+        self.servoRight = myservo.MyServo(
             servoRightPin, servoRightLow, servoRightHigh, servoRightPosition)
-        self.servoGrip = servo.MyServo(
-            servoGripPin, servoGripLow, servoGripHigh, servoGripPosition)
-        self.servoGripRotate = servo.MyServo(
+        self.servoGripRotate = myservo.MyServo(
             servoGripRotatePin, servoGripRotateLow, servoGripRotateHigh, servoGripRotatePosition)
+        self.servoGrip = myservo.MyServo(
+            servoGripPin, servoGripLow, servoGripHigh, servoGripPosition)
 
     def getData(self):
-        clawState = 'open' if self.servoGripRotate.getPosition(
-        ) == self.servoGripRotate.getPosition() else 'closed'
-
-        return self.servoBase.getPosition() + '|' + self.servoLeft.getPosition() + '|'
-        + self.servoRight.getPosition() + '|' + self.servoGrip.getPosition() + '|'
-        + clawState
+        data = [self.servoBase.getPosition(), self.servoLeft.getPosition(), self.servoRight.getPosition(), self.servoGripRotate.getPosition(), self.servoGrip.getPosition()]
+        return '|'.join(str(d) for d in data)
 
     def setData(self, data):
+        print('set data1 %s' % data)
         positions = data.split('|')
-        if len(positions) != 4:
+        if len(positions) != 5:
             return
-        self.servoBase.setPosition(int(positions[0]))
-        self.servoLeft.setPosition(int(positions[1]))
-        self.servoRight.setPosition(int(positions[2]))
-        self.servoGripRotate.setPosition(int(positions[3]))
+        self.servoBase.moveTo(int(positions[0]))
+        self.servoLeft.moveTo(int(positions[1]))
+        self.servoRight.moveTo(int(positions[2]))
+        self.servoGripRotate.moveTo(int(positions[3]))
+        print('set data2 %s' % positions)
 
         if positions[4] == 'open':
-            self.clawOpen()
+            self.servoGrip.moveTo(servoGripLow)
         elif positions[4] == 'close':
-            self.clawClose()
+            self.servoGrip.moveTo(servoGripHigh)
 
     def setPosition(self, servo, position):
-        armData = self.getData()
-        armData.split('|')[servo] = position
+        print('set position %s' % position)
+        armData = self.getData().split('|')
+        armData[servo] = str(position)
         self.setData('|'.join(armData))
 
     def clawOpen(self):
-        armData = self.getData()
-        armData.split('|')[servo] = servoGripHigh
+        armData = self.getData().split('|')
+        armData[4] = 'open'
         self.setData('|'.join(armData))
 
     def clawClose(self):
-        armData = self.getData()
-        armData.split('|')[servo] = servoGripLow
+        armData = self.getData().split('|')
+        armData[4] = 'close'
         self.setData('|'.join(armData))

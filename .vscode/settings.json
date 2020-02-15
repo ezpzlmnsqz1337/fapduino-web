@@ -26,5 +26,6 @@
   "files.autoSave": "off",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
-  }
+},
+"python.linting.pylintEnabled": true
 }
