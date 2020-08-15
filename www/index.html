@@ -112,6 +112,11 @@
                     <div id="key-right" class="key">right</div>
                 </div>
             </div>
+
+            <div class="keys">
+                <div id="key-e" class="key top">open</div>
+                <div id="key-q" class="key">close</div>
+            </div>
       </div>
     </div>
     <style>
@@ -159,7 +164,8 @@
     <script>
       var SPEED = 5
       // var ws = new WebSocket('ws://' + window.location.hostname)
-      var ws = new WebSocket("ws://192.168.0.179")
+      // var ws = new WebSocket("ws://192.168.0.179")
+      var ws = new WebSocket("ws://localhost:8085")
 
       ws.onopen = event => {
         ws.send("arm:getData")
@@ -303,6 +309,14 @@
 
       document.getElementById('key-right').onclick = e => {
         this.leftRightIncrement(SPEED)
+      }
+
+      document.getElementById('key-open').onclick = e => {
+        this.openClaw()
+      }
+
+      document.getElementById('key-close').onclick = e => {
+        this.closeClaw()
       }
 
       document.addEventListener('keydown', throttle(e => {
